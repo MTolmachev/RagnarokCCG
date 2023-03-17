@@ -1,0 +1,2 @@
+# RagnarokCCG
+game for Skillbox
