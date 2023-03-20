@@ -6,57 +6,47 @@ using TMPro;
 
 public class CardInfoScript : MonoBehaviour
 {
-    public Card SelfCard;
+    public CardController Controller;
     public Image Logo;
     public TextMeshProUGUI Name, Attack, Defense, Manacost;
     public GameObject HideObj, HighlightedObj;
-    public bool IsPlayer;
     public Color NormalCol, TargetCol;
 
-    public void HideCardInfo(Card card)
+    public void HideCardInfo()
     {
-       SelfCard = card;
+       
        HideObj.SetActive(true);
-       IsPlayer = false;
+     
        Manacost.text = "";
     }
 
-    public void ShowCardInfo(Card card, bool IsPlayer)
+    public void ShowCardInfo()
     {
-        SelfCard = card;
-        this.IsPlayer = IsPlayer;
-
         HideObj.SetActive(false);
 
-        Logo.sprite = card.Logo;
+        Logo.sprite = Controller.Card.Logo;
         Logo.preserveAspect = true;
-        Name.text = card.Name;
+        Name.text = Controller.Card.Name;
 
         RefreshData();
-
 
 
     }
 
     public void RefreshData()
     {
-        Attack.text = SelfCard.Attack.ToString();
-        Defense.text = SelfCard.Defense.ToString();
-        Manacost.text = SelfCard.Manacost.ToString();
+        Attack.text = Controller.Card.Attack.ToString();
+        Defense.text = Controller.Card.Defense.ToString();
+        Manacost.text = Controller.Card.Manacost.ToString();
     }
 
-    public void HighlightCard()
+    public void HighlightCard(bool highlight)
     {
-        HighlightedObj.SetActive(true);
+        HighlightedObj.SetActive(highlight);
     }
-    public void DeHighlightCard()
+     public void HighlightManaAvaliability(int currentMana)
     {
-        HighlightedObj.SetActive(false);
-    }
-
-    public void CheckForAvailability(int currentMana)
-    {
-        GetComponent<CanvasGroup>().alpha = currentMana >= SelfCard.Manacost ? 1 : .5f;
+        GetComponent<CanvasGroup>().alpha = currentMana >= Controller.Card.Manacost ? 1 : .5f;
     }
 
     public void HighlightAsTarget(bool highlight)

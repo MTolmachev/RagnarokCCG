@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 407569608}
   - component: {fileID: 592139615259313810}
   - component: {fileID: 150333266273441020}
+  - component: {fileID: 4511891290842407204}
   m_Layer: 5
   m_Name: CardPref
   m_TagString: Untagged
@@ -175,9 +176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f42c48eafdb3941af8de47225bee1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CC: {fileID: 4511891290842407204}
   DefaultParent: {fileID: 0}
   DefaultTempCardParent: {fileID: 0}
-  GameManager: {fileID: 0}
   IsDraggable: 0
 --- !u!225 &407569608
 CanvasGroup:
@@ -203,6 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84c50e30e91445849b88870b6d27b2e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Controller: {fileID: 4511891290842407204}
   Logo: {fileID: 8957649537738382220}
   Name: {fileID: 4893531830431253560}
   Attack: {fileID: 6740687288778354821}
@@ -210,7 +212,6 @@ MonoBehaviour:
   Manacost: {fileID: 3204778659546180158}
   HideObj: {fileID: 1668798729744765117}
   HighlightedObj: {fileID: 8540760864749456751}
-  IsPlayer: 0
   NormalCol: {r: 0.46274513, g: 0.46274513, b: 0.46274513, a: 1}
   TargetCol: {r: 0.9716981, g: 0.15858333, b: 0, a: 0.5019608}
 --- !u!114 &150333266273441020
@@ -225,6 +226,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93b603cae7c2f90449da619d6f8a4a94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4511891290842407204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524257056382705864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76bf6a5444aec1a43bd662780710c65e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsPlayerCard: 0
+  Info: {fileID: 592139615259313810}
+  Movement: {fileID: -2734343414465118157}
 --- !u!1 &1668798729744765117
 GameObject:
   m_ObjectHideFlags: 0

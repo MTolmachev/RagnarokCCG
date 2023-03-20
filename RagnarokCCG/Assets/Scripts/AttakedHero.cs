@@ -16,20 +16,18 @@ public class AttakedHero : MonoBehaviour, IDropHandler
     
     public HeroType type;
 
-    public GameManagerScript GameManager;
 
     public void OnDrop(PointerEventData eventData)
     {
-        if(!GameManager.IsPlayerTurn) return;
+        if(!GameManagerScript.Instance.IsPlayerTurn) return;
 
-        CardInfoScript card = eventData.pointerDrag.GetComponent<CardInfoScript>();
+        CardController card = eventData.pointerDrag.GetComponent<CardController>();
 
         if(card &&
-            card.SelfCard.CanAtack &&
+            card.Card.CanAtack &&
             type == HeroType.ENEMY)
         {
-            card.SelfCard.CanAtack = false;
-            GameManager.DamageHero(card, true);
+           GameManagerScript.Instance.DamageHero(card, true);
         }
     }
 

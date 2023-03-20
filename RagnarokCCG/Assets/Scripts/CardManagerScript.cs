@@ -25,10 +25,7 @@ public struct Card
 
     }
 
-    public void ChangeAtackState(bool can)
-    {
-        CanAtack = can;
-    }
+
     public void GetDamage(int dmg)
     {
         Defense -= dmg;

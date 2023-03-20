@@ -7,18 +7,19 @@ using UnityEngine.UI;
 
 public class CardMovementScript : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    public CardController CC;
+
     Camera _mainCamera;
     Vector3 _offset;
     public Transform DefaultParent, DefaultTempCardParent;
     GameObject _tempCardGO;
-    public GameManagerScript GameManager;
     public bool IsDraggable;
 
     private void Awake()
     {
         _mainCamera = Camera.allCameras[0];
         _tempCardGO = GameObject.Find("TempCardGO");
-        GameManager = FindObjectOfType<GameManagerScript>();
+        GameManagerScript.Instance = FindObjectOfType<GameManagerScript>();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -26,18 +27,18 @@ public class CardMovementScript : MonoBehaviour, IBeginDragHandler, IDragHandler
 
         DefaultParent = DefaultTempCardParent = transform.parent;
 
-        IsDraggable = GameManager.IsPlayerTurn &&
+        IsDraggable = GameManagerScript.Instance.IsPlayerTurn &&
                       (
                         (DefaultParent.GetComponent<DropPlaceScript>().Type == FieldType.PLAYER_HAND &&
-                        GameManager.PlayerMana >= GetComponent<CardInfoScript>().SelfCard.Manacost) ||
+                        GameManagerScript.Instance.PlayerMana >= CC.Card.Manacost) ||
                         (DefaultParent.GetComponent<DropPlaceScript>().Type == FieldType.PLAYER_FIELD &&
-                        GetComponent<CardInfoScript>().SelfCard.CanAtack)
+                        CC.Card.CanAtack)
                       );
 
         if (!IsDraggable)
             return;
-        if (GetComponent<CardInfoScript>().SelfCard.CanAtack)
-            GameManager.HighlightTargets(true);
+        if (CC.Card.CanAtack)
+            GameManagerScript.Instance.HighlightTargets(true);
 
         _tempCardGO.transform.SetParent(DefaultParent);
         _tempCardGO.transform.SetSiblingIndex(transform.GetSiblingIndex());
@@ -67,7 +68,7 @@ public class CardMovementScript : MonoBehaviour, IBeginDragHandler, IDragHandler
         if (!IsDraggable)
             return;
 
-        GameManager.HighlightTargets(false);
+        GameManagerScript.Instance.HighlightTargets(false);
 
         transform.SetParent(DefaultParent);
         GetComponent<CanvasGroup>().blocksRaycasts = true;
