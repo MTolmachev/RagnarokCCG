@@ -34,15 +34,15 @@ public class CardController : MonoBehaviour
         if(IsPlayerCard)
         {
             GameManager.PlayerHandCards.Remove(this);
-            GameManager.PlayerFieldCards.Remove(this);
+            GameManager.PlayerFieldCards.Add(this);
             GameManager.ReduceMana(true, Card.Manacost);
             GameManager.CheckCardsForAvailability();
         }
         else
         {
             GameManager.EnemyHandCards.Remove(this);
-            GameManager.EnemyFieldCards.Remove(this);
-            GameManager.ReduceMana(true, Card.Manacost);
+            GameManager.EnemyFieldCards.Add(this);
+            GameManager.ReduceMana(false, Card.Manacost);
         }
 
         Card.IsPlaced = true;

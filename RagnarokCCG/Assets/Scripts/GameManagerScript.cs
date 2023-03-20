@@ -97,8 +97,6 @@ public class GameManagerScript : MonoBehaviour
 
         Card card = deck[0];
 
-        GameObject cardGO = Instantiate(CardPref, hand, false);
-
         CreateCardPref(deck[0], hand);
 
         deck.RemoveAt(0);
@@ -114,7 +112,7 @@ public class GameManagerScript : MonoBehaviour
         if (cardC.IsPlayerCard)
             PlayerHandCards.Add(cardC);
         else
-            EnemyFieldCards.Add(cardC);
+            EnemyHandCards.Add(cardC);
     }
     IEnumerator TurnFunc()
     {
@@ -157,6 +155,8 @@ public class GameManagerScript : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
 
+        GiveCardsToHand(CurrentGame.EnemyDeck, EnemyHand);
+
         int count = cards.Count == 1 ? 1 :
             Random.Range(0, cards.Count);
 
@@ -173,19 +173,17 @@ public class GameManagerScript : MonoBehaviour
 
             cardsList[0].GetComponent<CardMovementScript>().MoveToField(EnemyField);
 
-            ReduceMana(false, cardsList[0].Card.Manacost);
-
             yield return new WaitForSeconds(.51f);
 
             cardsList[0].Info.ShowCardInfo();
             cardsList[0].transform.SetParent(EnemyField);
             cardsList[0].OnCast();
         }
-        GiveCardsToHand(CurrentGame.EnemyDeck, EnemyHand);
+        
 
         yield return new WaitForSeconds(1);
 
-        foreach (var activeCard in EnemyFieldCards.FindAll(x=>x.Card.CanAtack))
+        foreach (var activeCard in EnemyFieldCards.FindAll(x => x.Card.CanAtack))
         {
             if (Random.Range(0, 2) == 0 &&
                 PlayerFieldCards.Count > 0)
@@ -212,6 +210,7 @@ public class GameManagerScript : MonoBehaviour
 
         }
         yield return new WaitForSeconds(1f);
+
         ChangeTurn();
     }
 
@@ -251,11 +250,11 @@ public class GameManagerScript : MonoBehaviour
 
     public void CardsFight(CardController attacker, CardController defender)
     {
-        defender.Card.GetDamage(defender.Card.Attack);
+        defender.Card.GetDamage(attacker.Card.Attack);
         attacker.OnDamageDeal();
         defender.OnTakeDamage(attacker);
 
-        attacker.Card.GetDamage(attacker.Card.Attack);
+        attacker.Card.GetDamage(defender.Card.Attack);
         attacker.OnTakeDamage();
 
         attacker.CheckForAlive();

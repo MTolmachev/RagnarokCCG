@@ -17,9 +17,6 @@ public class AttackedCard : MonoBehaviour, IDropHandler
             defender.Card.IsPlaced)
         {
 
-            /*if(attacker.IsPlayerCard)
-                attacker.Info.HighlightCard(false);*/
-
             GameManagerScript.Instance.CardsFight(attacker, defender);
         }
 
