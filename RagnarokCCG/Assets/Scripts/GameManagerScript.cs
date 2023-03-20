@@ -41,6 +41,12 @@ public class GameManagerScript : MonoBehaviour
     public int PlayerMana = 10, EnemyMana = 10;
     public TextMeshProUGUI PlayerManaTxt, EnemyManaTxt;
 
+    public int PlayerHP = 10, EnemyHP = 10;
+    public TextMeshProUGUI PlayerHPTxt, EnemyHPTxt;
+
+    public GameObject ResultGO;
+    public TextMeshProUGUI ResultTxt;
+
 
     public List<CardInfoScript> PlayerHandCards = new List<CardInfoScript>(),
                                 PlayerFieldCards = new List<CardInfoScript>(),
@@ -63,6 +69,7 @@ public class GameManagerScript : MonoBehaviour
         GiveHandCards(CurrentGame.PlayerDeck, PlayerHand);
 
         ShowMana();
+        ShowHP();
 
         StartCoroutine(TurnFunc());
     }
@@ -105,7 +112,8 @@ public class GameManagerScript : MonoBehaviour
 
         foreach (var card in PlayerFieldCards)
             card.DeHighlightCard();
-      
+
+        CheckCardForAvailability();
 
         if (IsPlayerTurn)
         {
@@ -150,7 +158,7 @@ public class GameManagerScript : MonoBehaviour
         {
             if (EnemyFieldCards.Count > 5 ||
                 EnemyMana == 0)
-                return;
+                break;
 
             List<CardInfoScript> cardsList = cards.FindAll(x => EnemyMana >= x.SelfCard.Manacost);
 
@@ -168,14 +176,25 @@ public class GameManagerScript : MonoBehaviour
 
         foreach (var activeCard in EnemyFieldCards.FindAll(x=>x.SelfCard.CanAtack))
         {
-            if (PlayerFieldCards.Count == 0) return;
+            if (Random.Range(0, 2) == 0 &&
+                PlayerFieldCards.Count > 0)
+            {
+                var enemy = PlayerFieldCards[Random.Range(0, PlayerFieldCards.Count)];
 
-            var enemy = PlayerFieldCards[Random.Range(0, PlayerFieldCards.Count)];
+                Debug.Log($"{activeCard.SelfCard.Name} ({activeCard.SelfCard.Attack};{activeCard.SelfCard.Defense}) ---> {enemy.SelfCard.Name} ({enemy.SelfCard.Attack};{enemy.SelfCard.Defense})");
 
-            Debug.Log($"{activeCard.SelfCard.Name} ({activeCard.SelfCard.Attack};{activeCard.SelfCard.Defense}) ---> {enemy.SelfCard.Name} ({enemy.SelfCard.Attack};{enemy.SelfCard.Defense})");
+                activeCard.SelfCard.ChangeAtackState(false);
+                CardsFight(enemy, activeCard);
+            }
+            else
+            {
+                Debug.Log($"{activeCard.SelfCard.Name} ({activeCard.SelfCard.Attack};{activeCard.SelfCard.Defense}) ATTACKED HERO)");
 
-            activeCard.SelfCard.ChangeAtackState(false);
-            CardsFight(enemy, activeCard);
+                activeCard.SelfCard.ChangeAtackState(false);
+                DamageHero(activeCard, false);
+            }
+
+            
         }
     }
 
@@ -200,6 +219,12 @@ public class GameManagerScript : MonoBehaviour
     {
         PlayerManaTxt.text = PlayerMana.ToString();
         EnemyManaTxt.text = EnemyMana.ToString();
+    }
+
+    private void ShowHP()
+    {
+        PlayerHPTxt.text = PlayerHP.ToString();
+        EnemyHPTxt.text = EnemyHP.ToString();
     }
 
     private void GiveNewCards()
@@ -245,5 +270,39 @@ public class GameManagerScript : MonoBehaviour
             EnemyMana = Mathf.Clamp(EnemyMana - manacost, 0, int.MaxValue);
 
         ShowMana();
+    }
+
+    public void DamageHero(CardInfoScript card, bool isEnemyAttacked)
+    {
+        if (isEnemyAttacked)
+            EnemyHP = Mathf.Clamp(EnemyHP - card.SelfCard.Attack, 0, int.MaxValue);
+        else
+            PlayerHP = Mathf.Clamp(PlayerHP - card.SelfCard.Attack, 0, int.MaxValue);
+
+        ShowHP();
+
+        card.DeHighlightCard();
+        CheckForResult();
+    }
+
+    void CheckForResult()
+    {
+        if (EnemyHP == 0)
+            ShowResult("YOU WIN");
+        else if (PlayerHP == 0)
+            ShowResult("YOU LOOOOOSE");
+    }
+
+    void ShowResult(string msg)
+    {
+        ResultGO.SetActive(true);
+        ResultTxt.text = msg;
+        StopAllCoroutines();
+    }
+
+    public void CheckCardForAvailability()
+    {
+        foreach (var card in PlayerHandCards)
+            card.CheckForAvailability(PlayerMana);
     }
 }

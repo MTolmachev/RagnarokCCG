@@ -8,6 +8,7 @@ public struct Card
     public Sprite Logo;
     public int Attack, Defense, Manacost;
     public bool CanAtack;
+    public bool IsPlaced;
     public bool IsAlive {
         get { return Defense > 0; }
     }
@@ -19,7 +20,9 @@ public struct Card
         Attack = attack;
         Defense = defense;
         CanAtack = false;
+        IsPlaced = false;
         Manacost = manacost;
+
     }
 
     public void ChangeAtackState(bool can)

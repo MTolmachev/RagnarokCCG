@@ -52,4 +52,9 @@ public class CardInfoScript : MonoBehaviour
     {
         HighlightedObj.SetActive(false);
     }
+
+    public void CheckForAvailability(int currentMana)
+    {
+        GetComponent<CanvasGroup>().alpha = currentMana >= SelfCard.Manacost ? 1 : .5f;
+    }
 }
