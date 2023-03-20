@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -26,11 +27,14 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
 
         if (card && 
             card.GameManager.PlayerFieldCards.Count < 6 &&
-            card.GameManager.IsPlayerTurn)
+            card.GameManager.IsPlayerTurn && 
+            card.GameManager.PlayerMana >= card.GetComponent<CardInfoScript>().SelfCard.Manacost)
         {
             card.GameManager.PlayerHandCards.Remove(card.GetComponent<CardInfoScript>());
             card.GameManager.PlayerFieldCards.Add(card.GetComponent<CardInfoScript>());
             card.DefaultParent = transform;
+
+            card.GameManager.ReduceMana(true, card.GetComponent<CardInfoScript>().SelfCard.Manacost);
         }
             
     }

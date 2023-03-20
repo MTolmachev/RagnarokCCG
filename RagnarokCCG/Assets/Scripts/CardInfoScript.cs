@@ -8,7 +8,7 @@ public class CardInfoScript : MonoBehaviour
 {
     public Card SelfCard;
     public Image Logo;
-    public TextMeshProUGUI Name, Attack, Defense;
+    public TextMeshProUGUI Name, Attack, Defense, Manacost;
     public GameObject HideObj, HighlightedObj;
     public bool IsPlayer;
 
@@ -17,6 +17,7 @@ public class CardInfoScript : MonoBehaviour
        SelfCard = card;
        HideObj.SetActive(true);
        IsPlayer = false;
+       Manacost.text = "";
     }
 
     public void ShowCardInfo(Card card, bool IsPlayer)
@@ -40,6 +41,7 @@ public class CardInfoScript : MonoBehaviour
     {
         Attack.text = SelfCard.Attack.ToString();
         Defense.text = SelfCard.Defense.ToString();
+        Manacost.text = SelfCard.Manacost.ToString();
     }
 
     public void HighlightCard()
