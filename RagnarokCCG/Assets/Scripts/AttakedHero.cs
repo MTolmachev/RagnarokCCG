@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class AttakedHero : MonoBehaviour, IDropHandler
 {
@@ -10,6 +11,8 @@ public class AttakedHero : MonoBehaviour, IDropHandler
         ENEMY,
         PLAYER
     }
+
+    public Color NormalCol, TargetCol;
     
     public HeroType type;
 
@@ -28,5 +31,10 @@ public class AttakedHero : MonoBehaviour, IDropHandler
             card.SelfCard.CanAtack = false;
             GameManager.DamageHero(card, true);
         }
+    }
+
+    public void HighlightAsTarget(bool highlight)
+    {
+        GetComponent<Image>().color = highlight ? TargetCol : NormalCol;
     }
 }

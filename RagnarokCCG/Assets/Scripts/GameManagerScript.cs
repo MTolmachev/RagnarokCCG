@@ -47,6 +47,8 @@ public class GameManagerScript : MonoBehaviour
     public GameObject ResultGO;
     public TextMeshProUGUI ResultTxt;
 
+    public AttakedHero EnemyHero, PlayerHero;
+
 
     public List<CardInfoScript> PlayerHandCards = new List<CardInfoScript>(),
                                 PlayerFieldCards = new List<CardInfoScript>(),
@@ -107,7 +109,7 @@ public class GameManagerScript : MonoBehaviour
 
     IEnumerator TurnFunc()
     {
-        TurnTime = 31;
+        TurnTime = 30;
         TurnTimeTxt.text = TurnTime.ToString();
 
         foreach (var card in PlayerFieldCards)
@@ -129,42 +131,42 @@ public class GameManagerScript : MonoBehaviour
                 TurnTimeTxt.text = TurnTime.ToString();
                 yield return new WaitForSeconds(1);
             }
+            ChangeTurn();
         }
         else
         {
             foreach (var card in EnemyFieldCards)
                 card.SelfCard.ChangeAtackState(true);
 
-            while (TurnTime-- > 27)
-            {
-                TurnTimeTxt.text = TurnTime.ToString();
-                yield return new WaitForSeconds(1);
-            }
-            if (EnemyHandCards.Count > 0)
-                EnemyTurn(EnemyHandCards);
+           
+           StartCoroutine(EnemyTurn(EnemyHandCards));
             
         }
-
-        ChangeTurn();
-
     }
 
-    void EnemyTurn(List<CardInfoScript> cards)
+    IEnumerator EnemyTurn(List<CardInfoScript> cards)
     {
+        yield return new WaitForSeconds(1);
+
         int count = cards.Count == 1 ? 1 :
             Random.Range(0, cards.Count);
 
         for (int i = 0; i < count; i++)
         {
             if (EnemyFieldCards.Count > 5 ||
-                EnemyMana == 0)
+                EnemyMana == 0 ||
+                EnemyHandCards.Count == 0)
                 break;
 
             List<CardInfoScript> cardsList = cards.FindAll(x => EnemyMana >= x.SelfCard.Manacost);
 
             if (cardsList.Count == 0) break;
 
+            cardsList[0].GetComponent<CardMovementScript>().MoveToField(EnemyField);
+
             ReduceMana(false, cardsList[0].SelfCard.Manacost);
+
+            yield return new WaitForSeconds(.51f);
 
             cardsList[0].ShowCardInfo(cardsList[0].SelfCard, false);
             cardsList[0].transform.SetParent(EnemyField);
@@ -174,6 +176,8 @@ public class GameManagerScript : MonoBehaviour
         }
         GiveCardsToHand(CurrentGame.EnemyDeck, EnemyHand);
 
+        yield return new WaitForSeconds(1);
+
         foreach (var activeCard in EnemyFieldCards.FindAll(x=>x.SelfCard.CanAtack))
         {
             if (Random.Range(0, 2) == 0 &&
@@ -181,21 +185,27 @@ public class GameManagerScript : MonoBehaviour
             {
                 var enemy = PlayerFieldCards[Random.Range(0, PlayerFieldCards.Count)];
 
-                Debug.Log($"{activeCard.SelfCard.Name} ({activeCard.SelfCard.Attack};{activeCard.SelfCard.Defense}) ---> {enemy.SelfCard.Name} ({enemy.SelfCard.Attack};{enemy.SelfCard.Defense})");
-
                 activeCard.SelfCard.ChangeAtackState(false);
+
+                activeCard.GetComponent<CardMovementScript>().MoveToTarget(enemy.transform);
+                yield return new WaitForSeconds(.75f);
+
                 CardsFight(enemy, activeCard);
             }
             else
             {
-                Debug.Log($"{activeCard.SelfCard.Name} ({activeCard.SelfCard.Attack};{activeCard.SelfCard.Defense}) ATTACKED HERO)");
-
                 activeCard.SelfCard.ChangeAtackState(false);
+
+                activeCard.GetComponent<CardMovementScript>().MoveToTarget(PlayerHero.transform);
+                yield return new WaitForSeconds(.75f);
                 DamageHero(activeCard, false);
             }
-
             
+            yield return new WaitForSeconds(.2f);
+
         }
+        yield return new WaitForSeconds(1f);
+        ChangeTurn();
     }
 
     public void ChangeTurn()
@@ -304,5 +314,13 @@ public class GameManagerScript : MonoBehaviour
     {
         foreach (var card in PlayerHandCards)
             card.CheckForAvailability(PlayerMana);
+    }
+
+    public void HighlightTargets(bool highlight)
+    {
+        foreach(var card in EnemyFieldCards)
+            card.HighlightAsTarget(highlight);
+
+        EnemyHero.HighlightAsTarget(highlight);
     }
 }
